@@ -10,10 +10,10 @@ class TreeMap(input_lines: Iterator[String]) {
 
   private[this] def treemap(y: Int)(x: Int) = internal_map(y)(x % width)
 
-  def traverse_from(y: Int, x: Int, trees_hit: Int = 0): Int =
+  def traverse_from(y: Int, x: Int, dy: Int, dx: Int, trees_hit: Int = 0): Int =
     if (y >= height) trees_hit else {
       val to_add = if (treemap(y)(x)) 1 else 0
-      traverse_from(y + 1, x + 3, trees_hit + to_add)
+      traverse_from(y + dy, x + dx, dy, dx, trees_hit + to_add)
     }
 }
 
@@ -23,6 +23,11 @@ object Day03 extends App {
 
   val lines = get_input_lines("inputs/input.txt")
   val treemap = new TreeMap(lines)
+  val slopes = List((1, 1), (1, 3), (1, 5), (1, 7), (2, 1))
 
-  println(treemap.traverse_from(0, 0))
+  val ans = slopes.map{
+    case (dy, dx) => treemap.traverse_from(0, 0, dy, dx)
+  }.foldLeft(1)(_ * _)
+
+  println(ans)
 }
