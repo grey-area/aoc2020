@@ -14,7 +14,7 @@ object Day04 extends App {
   // Note, for this regex to work we've assumed there are no passports with
   // duplicated fields.
   val field_pattern = raw"(?:$byr_ptn|$iyr_ptn|$eyr_ptn|$hgt_ptn|$hcl_ptn|$ecl_ptn|$pid_ptn)"
-  val pattern = raw"(?:${field_pattern}\s(?:cid:\S+\s)?){7,8}".r
+  val pattern = raw"(?:${field_pattern}\s(?:cid:\S+\s)?){7}".r
   val matches = pattern.findAllIn(input_text)
 
   println(matches.length)
