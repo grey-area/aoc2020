@@ -3,10 +3,9 @@ import util.matching.Regex.Match
 import annotation.tailrec
 
 
-final case class Instruction(op: (Int, Computer) => Computer, arg: Int)
-
-
 object Compiler {
+  final case class Instruction(op: (Int, Computer) => Computer, arg: Int)
+
   private val accOp = (arg: Int, computer: Computer) => {
     val Computer(ic, acc, program) = computer
     Computer(ic + 1, acc + arg, program)
@@ -42,10 +41,11 @@ object Compiler {
 }
 
 
-final case class Computer(ic: Int, acc: Int, program: Vector[Instruction]) {
+final case class Computer(ic: Int, acc: Int, program: Vector[Compiler.Instruction]) {
+  @tailrec
   def run(history: Set[Int] = Set[Int]()): Int = {
     if (history contains ic) acc else {
-      val Instruction(op, arg) = program(ic)
+      val Compiler.Instruction(op, arg) = program(ic)
       op(arg, this).run(history + ic)
     }
   }

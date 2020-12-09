@@ -69,6 +69,7 @@ object Compiler {
 
 
 final case class Computer(ic: Int, acc: Int, program: Vector[Instruction]) {
+  @tailrec
   def run(history: Set[Int] = Set[Int]()): Option[Int] = {
     if (ic == program.size)
       Some(acc)
