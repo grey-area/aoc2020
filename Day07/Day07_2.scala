@@ -19,7 +19,7 @@ object Graph {
   }
 
   def apply(lines: Iterator[String]) = {
-    val graphMap = Map(lines.map(parseLine).toList.flatten: _*)
+    val graphMap = Map(lines.flatMap(parseLine).toList: _*)
     new Graph(graphMap)
   }
 }

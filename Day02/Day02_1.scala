@@ -26,5 +26,5 @@ object Day02 extends App {
 
   val lines = read_input("input.txt")
 
-  println(lines.map(is_line_valid).flatten.count(x => x))
+  println(lines.flatMap(is_line_valid).count(x => x))
 }

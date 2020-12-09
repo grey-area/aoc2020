@@ -57,9 +57,9 @@ object Compiler {
     val matches = pattern.findAllMatchIn(sourceCode)
     val uncompiledProgram = matches.map(parseInstruction).toVector
 
-    val programCollection = (0 until uncompiledProgram.size).map{
+    val programCollection = (0 until uncompiledProgram.size).flatMap{
       modifiedProgramAtIndex(uncompiledProgram, _)
-    }.flatten.map(compileProgram)
+    }.map(compileProgram)
 
     programCollection.map{
       Computer(0, 0, _)
