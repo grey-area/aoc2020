@@ -3,10 +3,10 @@ import io.Source
 final case class Edge(toName: String, number: Int)
 
 object Graph {
-  def fromBagPattern = raw"^(\w+\s\w+)\sbag".r
-  def toBagPattern = raw"(?<=\s)(\d+)\s(\w+\s\w+)\sbag".r
+  private def fromBagPattern = raw"^(\w+\s\w+)\sbag".r
+  private def toBagPattern = raw"(?<=\s)(\d+)\s(\w+\s\w+)\sbag".r
 
-  def parseLine(line: String) = {
+  private def parseLine(line: String) = {
     val fromColour = fromBagPattern.findFirstMatchIn(line).map(_.group(1))
     val toColours = toBagPattern.findAllMatchIn(line).map{
       m => Edge(m.group(2), m.group(1).toInt)
@@ -25,14 +25,20 @@ object Graph {
 }
 
 final class Graph(private val graphMap: Map[String, List[Edge]]) {
-  // Note: inefficient, repeated computation
-  def countSubBags(key: String): Int = {
+  private def memoize[K, V](f: K => V): K => V = {
+    val cache = collection.mutable.Map.empty[K, V]
+    k => cache.getOrElseUpdate(k, f(k))
+  }
+
+  private def _countSubBags(key: String): Int = {
     val values = graphMap(key)
     if (values.size == 0)
       0
     else
       values.map(edge => edge.number * (1 + countSubBags(edge.toName))).sum
   }
+
+  val countSubBags = memoize(_countSubBags)
 }
 
 object Day07 extends App {
