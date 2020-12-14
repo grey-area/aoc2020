@@ -1,6 +1,6 @@
 import io.Source
 
-// A solution using the Chinese remainder theorem
+// A solution not using the Chinese remainder theorem
 
 case class Requirement(modulus: BigInt, remainder: BigInt)
 
@@ -15,18 +15,16 @@ object Day13 extends App {
     }.toList
   }
 
-  def chineseRemainderTerm(req: Requirement, N: BigInt) = {
-    val Ni = N / req.modulus
-    val Mi = Ni.modInverse(req.modulus)
-    req.remainder * Ni * Mi
-  }
+  def computeCommonTime(r1: Requirement, r2: Requirement) = {
+    val newRemainder = LazyList.iterate(r1.remainder)(_ + r1.modulus).filter{
+      _ % r2.modulus == r2.remainder
+    }(0)
 
-  def chineseRemainder(req: List[Requirement]) = {
-    val N = req.map(_.modulus).reduce(_ * _)
-    req.map(chineseRemainderTerm(_, N)).sum % N
+    Requirement(r1.modulus * r2.modulus, newRemainder)
   }
 
   val requirements = parseInput("inputs/input.txt")
-  val answer = chineseRemainder(requirements)
+
+  val answer = requirements.reduce(computeCommonTime).remainder
   println(answer)
 }
