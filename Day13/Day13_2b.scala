@@ -16,11 +16,11 @@ object Day13 extends App {
   }
 
   def computeCommonTime(r1: Requirement, r2: Requirement) = {
-    val newRemainder = LazyList.iterate(r1.remainder)(_ + r1.modulus).filter{
-      _ % r2.modulus == r2.remainder
-    }(0)
+    val modulusProduct = r1.modulus * r2.modulus
+    val answerRange = r1.remainder to modulusProduct by r1.modulus
 
-    Requirement(r1.modulus * r2.modulus, newRemainder)
+    val newRemainder = answerRange.find(_ % r2.modulus == r2.remainder).get
+    Requirement(modulusProduct, newRemainder)
   }
 
   val requirements = parseInput("inputs/input.txt")
