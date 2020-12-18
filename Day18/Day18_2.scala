@@ -1,6 +1,3 @@
-import io.Source
-
-
 object Evaluator {
   private val addPattern = """^(.+)\+(.+)$""".r
   private val mulPattern = """^(.+)\*(.+)$""".r
@@ -18,10 +15,7 @@ object Evaluator {
   }
 }
 
-
 object Day18 extends App {
-  val lines = Source.fromFile("inputs/input.txt").getLines()
-
-  val answer = lines.map(Evaluator(_)).sum
-  println(answer)
+  val lines = io.Source.fromFile("inputs/input.txt").getLines()
+  println(lines.map(Evaluator(_)).sum)
 }
