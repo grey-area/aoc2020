@@ -24,9 +24,14 @@ final class Rule(private val ruleMap: Map[String, String]) {
   }
   private val get = memoize(_get)
 
-  private val Pattern0 = get("0").r
+  private val Pattern42 = get("42").r
+  private val Pattern31 = get("31").r
+  private val Pattern0 = raw"^((?:${get("42")})+)((?:${get("31")})+)$$".r
 
-  def matches(message: String) = Pattern0.matches(message)
+  def matches(message: String) =
+    Pattern0.findAllMatchIn(message).exists{
+      m => Pattern42.findAllIn(m.group(1)).size > Pattern31.findAllIn(m.group(2)).size
+    }
 }
 
 
