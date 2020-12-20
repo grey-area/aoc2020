@@ -1,27 +1,32 @@
+import java.io.PrintWriter
+
+
 object Tile{
   val HeaderPattern = """Tile (\d+):""".r
   val W = 10
 
   val flipTransforms = List(
     (t: Tile) => t,
-    (t: Tile) => Tile(t.id, t.bottom, t.right.reverse, t.top, t.left.reverse),
-    (t: Tile) => Tile(t.id, t.top.reverse, t.left, t.bottom.reverse, t.right)
+    (t: Tile) => Tile(t.id, t.lines.map(_.reverse)),
+    (t: Tile) => Tile(t.id, t.lines.reverse)
   )
 
   def parse(s: String) = {
     val (header :: tileLines) = s.split('\n').toList
     val id = (header match {case HeaderPattern(id) => id}).toInt
-    val top = tileLines(0)
-    val right = tileLines.map(_(W - 1)).mkString
-    val bottom = tileLines(W - 1)
-    val left = tileLines.map(_(0)).mkString
-    id -> Tile(id, top, right, bottom, left)
+    id -> Tile(id, tileLines)
   }
 }
 
-final case class Tile(id: Int, top: String, right: String, bottom: String, left: String) {
-  private def rotateOnce = Tile(id, left.reverse, top, right.reverse, bottom)
+final case class Tile(id: Int, lines: List[String]) {
+  private def rotateOnce = Tile(id, lines.transpose.map(_.mkString.reverse))
   def rotate(n: Int): Tile = if (n == 0) this else this.rotateOnce.rotate(n - 1)
+  def top = lines(0)
+  def bottom = lines(Tile.W - 1)
+  def left = lines.map(_(0)).mkString
+  def right = lines.map(_(Tile.W - 1)).mkString
+  private def lineWithoutBorder(line: String) = line.slice(1, Tile.W - 1)
+  def withoutBorder = lines.slice(1, Tile.W - 1).map(lineWithoutBorder(_))
 }
 
 
@@ -53,6 +58,11 @@ object Arrangement {
         tile => allValidAssignments(pos + 1, remaining - tile.id, tiles, solution + ((i, j) -> tile))
       }
     }
+
+  def produceMap(solution: Map[(Int, Int), Tile]) =
+    (for (j <- 0 until N; j2 <- 0 until Tile.W - 2) yield {
+      (for (i <- 0 until N) yield solution((i, j)).withoutBorder(j2)).mkString
+    }).mkString("\n")
 }
 
 
@@ -60,5 +70,8 @@ object Day20 extends App {
   val tiles = Map(io.Source.fromFile("inputs/input.txt").mkString.split("\n\n").toList.map(Tile.parse): _*)
 
   val assignment = Arrangement.allValidAssignments(0, tiles.keys.toSet, tiles).head
-  println(Arrangement.getCornerIDs(assignment).product)
+  val answer = Arrangement.getCornerIDs(assignment).product
+  println(answer)
+
+  new PrintWriter("inputs/part2_input.txt") { write(Arrangement.produceMap(assignment)); close }
 }
