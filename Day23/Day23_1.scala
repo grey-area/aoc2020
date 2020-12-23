@@ -8,7 +8,9 @@ object Cups {
 
 final case class Cups(values: Vector[Int]) {
   private def findNextValue(removed: Vector[Int], currentValue: Int) = {
-    val values = ((currentValue - 1 until 0 by -1) ++ (9 until currentValue by -1))
+    val values = Iterator.iterate(currentValue){
+      x => (x - 2 + 9) % 9 + 1
+    }.drop(1)
     values.find(v => ! (removed contains v)).get
   }
 
@@ -19,7 +21,7 @@ final case class Cups(values: Vector[Int]) {
     remaining.take(destinationIndex) ++ removed ++ remaining.drop(destinationIndex)
   }
 
-  def computeAnswer() = {
+  private def computeAnswer() = {
     val idx = values.indexOf(1)
     val rotated = Cups.rotate(values, idx)
     rotated.drop(1).mkString
