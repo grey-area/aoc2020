@@ -1,3 +1,6 @@
+import java.io.{ObjectOutputStream, FileOutputStream}
+
+
 object HexGrid {
   private val pattern = "[ns]?[we]".r
   private def parseLine(s: String) = pattern.findAllIn(s).toList
@@ -43,4 +46,9 @@ object Day24 extends App {
   val finalState = HexGrid.processInput("inputs/input.txt")
   val answer = finalState.countBlack
   println(answer)
+
+  // Input for part 2
+  val oos = new ObjectOutputStream(new FileOutputStream("inputs/part2_generated_input"))
+  oos.writeObject(finalState.grid)
+  oos.close
 }
