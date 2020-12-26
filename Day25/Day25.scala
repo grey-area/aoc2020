@@ -1,5 +1,5 @@
 final case class Transform(subject: Long) {
-  def transform(value: Long) = (value * subject) % 20201227
+  private def transform(value: Long) = (value * subject) % 20201227
 
   def transformLoop(loopSize: Int, value: Long = 1): Long =
     if (loopSize == 0)
